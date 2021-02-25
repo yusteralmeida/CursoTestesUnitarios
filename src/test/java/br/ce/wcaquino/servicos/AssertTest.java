@@ -38,7 +38,7 @@ public class AssertTest {
 		assertSame(u2, u2);
 		assertEquals(u1, u2);
 
-//		assertNull(u3);
+		assertNull(u3);
 //		assertNotNull(u3);
 
 	}
