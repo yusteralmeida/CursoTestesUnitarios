@@ -56,7 +56,7 @@ public class LocacaoServiceTest {
 	@InjectMocks
 	private LocacaoService service;
 
-//	Estou dizendo que Ã© um mock 
+//	Estou dizendo que eh um mock 
 	@Mock
 	private LocacaoDAO dao;
 	@Mock
@@ -87,10 +87,10 @@ public class LocacaoServiceTest {
 
 	@Test
 	public void deveAlugarFilme() throws Exception {
-		// Nao pode ser um sabado. Se for sabado, ele nao executa
+//		Nao pode ser um sabado. Se for sabado, ele nao executa
 //		Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
-//		Edita o construtor. Diz que hoje é segunda
+//		Edita o construtor. Diz que hoje eh segunda
 		PowerMockito.whenNew(Date.class).withAnyArguments().thenReturn(DataUtils.obterData(01, 03, 2021));
 
 //		Cenario
@@ -110,31 +110,31 @@ public class LocacaoServiceTest {
 
 	}
 
-//	  1Âº Forma de resolver um teste que espera uma exceÃ§Ã£o
+//	  1 Forma de resolver um teste que espera uma excecao
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void deveLancarExcecaoAoAlugarFilmeSemEstoque() throws Exception {// FORMA ELEGANTE
 
-//		CenÃ¡rio
+//		Cenario
 		Usuario usuario = umUsuario().agora();
-		// Eu mudei o numero do meio
+//		Eu mudei o numero do meio
 		List<Filme> filme = Arrays.asList(umFilmeSemEstoque().agora());
 
-//		AÃ§Ã£o
+//		Acao
 		service.alugarFilme(usuario, filme);
 	}
 
 	@Test
 	public void naoDeveAlugarFilmeSemUsuario() throws FilmeSemEstoqueException {// FORMA ROBUSTA(MELHOR ESCOLHA)
 
-//		CenÃ¡rio
+//		Cenario
 		List<Filme> filme = Arrays.asList(umFilme().agora());
 
-//		AÃ§Ã£o
+//		Acao
 		try {
 			service.alugarFilme(null, filme);
 			Assert.fail();
 		} catch (LocadoraException e) {
-//			VerificaÃ§Ã£o
+//			Verificacao
 			assertThat(e.getMessage(), is("Usuario vazio"));
 		}
 
@@ -143,13 +143,13 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveAlugarFilmeSemFilme() throws LocadoraException, FilmeSemEstoqueException {// FORMA NOVA
 
-//		CenÃ¡rio
+//		Cenario
 		Usuario usuario = umUsuario().agora();
 
-//		VerificaÃ§Ã£o
+//		Verificacao
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Filme vazio");
-//		AÃ§Ã£o
+//		Acao
 		service.alugarFilme(usuario, null);
 
 	}
@@ -161,10 +161,10 @@ public class LocacaoServiceTest {
 //		Hoje tem de ser uma sabado para poder ser executado
 //		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
-//		Edita o construtor. Diz que hoje é sabado
+//		Edita o construtor. Diz que hoje eh sabado
 		PowerMockito.whenNew(Date.class).withAnyArguments().thenReturn(DataUtils.obterData(27, 02, 2021));
 
-//		Cenário
+//		Cenario
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 
@@ -184,12 +184,12 @@ public class LocacaoServiceTest {
 		Usuario usuario = umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(umFilme().agora());
 
-//		 O mockito Ã© por padrÃ£o false. Estou colocando true
+//		 O mockito eh por padrao false. Estou colocando true
 		when(spc.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
 
 //		 Acao
 		try {
-			service.alugarFilme(usuario, filmes);// Aqui que vai dÃ¡ o erro
+			service.alugarFilme(usuario, filmes);// Aqui que vai dah o erro
 			Assert.fail();
 //		Verificacao
 		} catch (LocadoraException e) {
@@ -211,7 +211,7 @@ public class LocacaoServiceTest {
 				umLocacao().comUsuario(usuario2).agora(), umLocacao().atrasado().comUsuario(usuario3).agora(),
 				umLocacao().atrasado().comUsuario(usuario3).agora());
 //		Mockito
-//		Quando chamar o mÃ©todo obterLocacoesPendentes, ele vai dar locacoes em obterLocacoesPendentes.
+//		Quando chamar o metodo obterLocacoesPendentes, ele vai dar locacoes em obterLocacoesPendentes.
 		when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
 
 //		Acao
@@ -220,7 +220,7 @@ public class LocacaoServiceTest {
 //		Mockito: Verificar email se notificarAtraso foi chamado.
 		verify(email).notificarAtraso(usuario);
 
-//		 Verifica se foi chamado duas vezes
+//		Verifica se foi chamado duas vezes
 		verify(email, Mockito.times(2)).notificarAtraso(usuario3);
 
 //		 Deve ser enviado pelo ao menos dois email
@@ -229,17 +229,17 @@ public class LocacaoServiceTest {
 //		Deve ser enviado no maximo 5 emails
 		verify(email, Mockito.atMost(5)).notificarAtraso(usuario3);
 
-//		NÃ£o importa quantos sejam enviados, sÃ³ vai verificar o primeiro
+//		Nao importa quantos sejam enviados, so vai verificar o primeiro
 		verify(email, Mockito.atLeastOnce()).notificarAtraso(usuario3);
 
-//		 Nunca enviou email para usuario2
+//		Nunca enviou email para usuario2
 		verify(email, never()).notificarAtraso(usuario2);
 
-//		Verifica no mock email se foi executado 3 vezes o mÃ©todo notificarAtraso,
+//		Verifica no mock email se foi executado 3 vezes o metodo notificarAtraso,
 //		como parametro qualquer instacia da classe Usuario.
 		verify(email, Mockito.times(3)).notificarAtraso(Mockito.any(Usuario.class));
 
-//		 NÃ£o foi mais enviado email algum
+//		 Nao foi mais enviado email algum
 		verifyNoMoreInteractions(email);
 	}
 
