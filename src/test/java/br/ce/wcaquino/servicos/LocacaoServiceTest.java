@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
@@ -91,7 +90,15 @@ public class LocacaoServiceTest {
 //		Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
 //		Edita o construtor. Diz que hoje eh segunda
-		PowerMockito.whenNew(Date.class).withAnyArguments().thenReturn(DataUtils.obterData(01, 03, 2021));
+//		PowerMockito.whenNew(Date.class).withAnyArguments().thenReturn(DataUtils.obterData(01, 03, 2021));
+
+//		Metodos estaticos. por causa do Calendar.getInstance().getTime() na classe LocacaoService
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, 01);
+		calendar.set(Calendar.MONTH, Calendar.MARCH);
+		calendar.set(Calendar.YEAR, 2021);
+		PowerMockito.mockStatic(Calendar.class);
+		PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
 
 //		Cenario
 		Usuario usuario = umUsuario().agora();
@@ -103,8 +110,8 @@ public class LocacaoServiceTest {
 
 //		Verificacao
 		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-		error.checkThat(locacao.getDataLocacao(), ehHoje());
-		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
+//		error.checkThat(locacao.getDataLocacao(), ehHoje());
+//		error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(01, 03, 2021)), is(true));
 		error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(02, 03, 2021)), is(true));
 
@@ -162,7 +169,14 @@ public class LocacaoServiceTest {
 //		Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
 
 //		Edita o construtor. Diz que hoje eh sabado
-		PowerMockito.whenNew(Date.class).withAnyArguments().thenReturn(DataUtils.obterData(27, 02, 2021));
+//		PowerMockito.whenNew(Date.class).withAnyArguments().thenReturn(DataUtils.obterData(27, 02, 2021));
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, 27);
+		calendar.set(Calendar.MONTH, Calendar.FEBRUARY);
+		calendar.set(Calendar.YEAR, 2021);
+		PowerMockito.mockStatic(Calendar.class);
+		PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
 
 //		Cenario
 		Usuario usuario = umUsuario().agora();
@@ -174,8 +188,12 @@ public class LocacaoServiceTest {
 //		Verificacao
 		assertThat(retorno.getDataRetorno(), caiEm(Calendar.MONDAY));
 		assertThat(retorno.getDataRetorno(), caiNumaSegunda());
+
+//		Verificacao do Powermockito
+		PowerMockito.verifyStatic(Mockito.times(7));
+		Calendar.getInstance();
 //		verifica se a classe Date foi invocado e se foi 2 vezes 
-		PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments();
+//		PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments();
 	}
 
 	@Test
