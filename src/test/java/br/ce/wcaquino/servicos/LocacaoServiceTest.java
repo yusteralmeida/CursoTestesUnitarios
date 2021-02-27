@@ -74,6 +74,7 @@ public class LocacaoServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		service = PowerMockito.spy(service);
 //		service = new LocacaoService();
 //		dao = Mockito.mock(LocacaoDAO.class);
 //		service.setLocacaoDAO(dao);
@@ -295,5 +296,22 @@ public class LocacaoServiceTest {
 		error.checkThat(locacaoRetorno.getDataLocacao(), ehHoje());
 		error.checkThat(locacaoRetorno.getDataRetorno(), ehHojeComDiferencaDias(3));
 
+	}
+
+	@Test
+	public void deveAlugar_Filme_SemCalcularValor() throws Exception {
+//		Cenario
+		Usuario usuario = umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(umFilme().agora());
+
+//		Eh chamado no lugar de um metodo privado existente na classe LocacaoService
+		PowerMockito.doReturn(1.0).when(service, "calcularValorLocacao", filmes);
+		
+//		Acao
+		Locacao locacao = service.alugarFilme(usuario, filmes);
+
+//		Verificacao
+		assertThat(locacao.getValor(), is(1.0));
+		PowerMockito.verifyPrivate(service).invoke("calcularValorLocacao", filmes);
 	}
 }
